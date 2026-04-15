@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -67,13 +67,23 @@
 
   /* LAYOUT */
   .container {
-    max-width: 1000px;
+    max-width: 1100px;
     margin: 2rem auto;
     padding: 0 1.5rem;
     display: grid;
-    grid-template-columns: 1fr 380px;
+    grid-template-columns: 1fr 400px;
     gap: 1.5rem;
     align-items: start;
+  }
+
+  /* Make both columns sticky-aware so they're always visible */
+  .col-left {
+    min-width: 0;
+  }
+
+  .col-right {
+    position: sticky;
+    top: 76px;
   }
 
   /* CARD */
@@ -270,7 +280,6 @@
 
   .bug-banner.visible { display: flex; }
   .bug-banner strong { font-weight: 600; }
-
   .bug-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
 
   /* SECURITY NOTE */
@@ -295,20 +304,6 @@
 
   .section-label:first-child { margin-top: 0; }
 
-  /* TAG */
-  .tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.3rem;
-    background: var(--tag);
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    padding: 0.3rem 0.6rem;
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-bottom: 1rem;
-  }
-
   /* CLICK LOG */
   .click-log {
     display: none;
@@ -325,9 +320,34 @@
   .click-log .log-entry { margin-bottom: 0.2rem; font-family: monospace; }
   .click-log .log-label { font-weight: 600; font-size: 0.7rem; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 0.4rem; }
 
-  @media (max-width: 720px) {
-    .container { grid-template-columns: 1fr; }
-    .steps { display: none; }
+  /* REMOVE ITEM BUTTON */
+  .item-remove {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: white;
+    color: var(--muted);
+    font-size: 0.75rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.15s;
+    line-height: 1;
+  }
+
+  .item-remove:hover {
+    background: var(--danger-light);
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+
+  .order-item.removed {
+    opacity: 0.4;
+    text-decoration: line-through;
+    pointer-events: none;
   }
 </style>
 </head>
@@ -336,11 +356,11 @@
 <header>
   <div class="logo">Shop<span>Flow</span></div>
   <div class="steps">
-    <span class="step">Carrito</span>
+    <span class="step">Cart</span>
     <span class="step-sep">›</span>
     <span class="step active">Checkout</span>
     <span class="step-sep">›</span>
-    <span class="step">Confirmación</span>
+    <span class="step">Confirmation</span>
   </div>
   <div style="width:80px"></div>
 </header>
@@ -348,63 +368,66 @@
 <div class="container">
 
   <!-- LEFT: FORM -->
-  <div>
+  <div class="col-left">
     <div class="card">
-      <p class="section-label">Información de envío</p>
+      <p class="section-label">Shipping Information</p>
 
       <div class="form-row">
         <div class="field">
-          <label>Nombre</label>
-          <input type="text" value="Carlos" placeholder="Nombre">
+          <label>First Name</label>
+          <input type="text" value="Carlos" placeholder="First name">
         </div>
         <div class="field">
-          <label>Apellido</label>
-          <input type="text" value="Mendoza" placeholder="Apellido">
+          <label>Last Name</label>
+          <input type="text" value="Mendoza" placeholder="Last name">
         </div>
       </div>
 
       <div class="form-row full">
         <div class="field">
-          <label>Dirección</label>
-          <input type="text" value="Av. Insurgentes Sur 1457, Col. Insurgentes Mixcoac" placeholder="Calle y número">
+          <label>Address</label>
+          <input type="text" value="1457 Insurgentes Ave, Insurgentes Mixcoac" placeholder="Street and number">
         </div>
       </div>
 
       <div class="form-row">
         <div class="field">
-          <label>Ciudad</label>
-          <input type="text" value="Ciudad de México" placeholder="Ciudad">
+          <label>City</label>
+          <input type="text" value="Mexico City" placeholder="City">
         </div>
         <div class="field">
-          <label>Código postal</label>
-          <input type="text" value="03920" placeholder="C.P.">
+          <label>ZIP Code</label>
+          <input type="text" value="03920" placeholder="ZIP">
         </div>
       </div>
 
       <div class="form-row full">
         <div class="field">
-          <label>Estado</label>
+          <label>State</label>
           <select>
-            <option>Ciudad de México</option>
+            <option>Mexico City</option>
             <option>Jalisco</option>
             <option>Nuevo León</option>
+            <option>California</option>
+            <option>Texas</option>
+            <option>New York</option>
           </select>
         </div>
       </div>
 
-      <p class="section-label" style="margin-top:1.75rem">Método de pago</p>
+      <p class="section-label" style="margin-top:1.75rem">Payment Method</p>
 
       <div class="form-row full">
         <div class="field">
-          <label>Número de tarjeta</label>
+          <label>Card Number</label>
           <input type="text" value="4242 4242 4242 4242" placeholder="0000 0000 0000 0000">
         </div>
       </div>
 
       <div class="form-row">
         <div class="field">
-          <label>Vencimiento</label>
-          <input type="text" value="08 / 27" placeholder="MM / AA">
+          <label>Expiration Date</label>
+          <input type="text" value="08 / 27" placeholder="MM / YY">
         </div>
         <div class="field">
           <label>CVV</label>
@@ -412,79 +435,82 @@
         </div>
       </div>
 
-      <p class="section-label" style="margin-top:1.75rem">¿Tienes un cupón?</p>
+      <p class="section-label" style="margin-top:1.75rem">Do you have a coupon?</p>
 
       <div class="coupon-row">
-        <input type="text" id="couponInput" placeholder="INGRESA TU CÓDIGO" maxlength="20">
-        <button class="btn-coupon" onclick="applyCoupon()">Aplicar</button>
+        <input type="text" id="couponInput" placeholder="ENTER YOUR CODE" maxlength="20">
+        <button class="btn-coupon" onclick="applyCoupon()">Apply</button>
       </div>
 
-      <div class="coupon-status success" id="couponStatus">
-        ✓ Cupón DESCUENTO20 aplicado — 20% de descuento
+      <div class="coupon-status" id="couponStatus">
+        ✓ Coupon <span id="couponCode"></span> applied successfully
       </div>
 
     </div>
   </div>
 
   <!-- RIGHT: ORDER SUMMARY -->
-  <div>
+  <div class="col-right">
     <div class="card">
-      <p class="card-title">Resumen de orden</p>
+      <p class="card-title">Order Summary</p>
 
       <div class="order-items">
-        <div class="order-item">
+        <div class="order-item" id="item-1">
           <div class="item-img">👟</div>
           <div class="item-info">
-            <div class="item-name">Tenis Urban Run Pro</div>
-            <div class="item-meta">Talla 28 · Negro</div>
+            <div class="item-name">Urban Run Pro Sneakers</div>
+            <div class="item-meta">Size 10 · Black</div>
           </div>
-          <div class="item-price">$1,299</div>
+          <div class="item-price">$129.99</div>
+          <button class="item-remove" onclick="removeItem('item-1')" title="Remove item">✕</button>
         </div>
-        <div class="order-item">
+        <div class="order-item" id="item-2">
           <div class="item-img">🎒</div>
           <div class="item-info">
-            <div class="item-name">Mochila Trail Explorer</div>
-            <div class="item-meta">25L · Gris</div>
+            <div class="item-name">Trail Explorer Backpack</div>
+            <div class="item-meta">25L · Gray</div>
           </div>
-          <div class="item-price">$849</div>
+          <div class="item-price">$84.99</div>
+          <button class="item-remove" onclick="removeItem('item-2')" title="Remove item">✕</button>
         </div>
-        <div class="order-item">
+        <div class="order-item" id="item-3">
           <div class="item-img">🧢</div>
           <div class="item-info">
-            <div class="item-name">Gorra Deportiva SF</div>
-            <div class="item-meta">Talla única · Verde</div>
+            <div class="item-name">SF Sport Cap</div>
+            <div class="item-meta">One size · Green</div>
           </div>
-          <div class="item-price">$299</div>
+          <div class="item-price">$29.99</div>
+          <button class="item-remove" onclick="removeItem('item-3')" title="Remove item">✕</button>
         </div>
       </div>
 
       <div class="divider"></div>
 
       <div class="summary-row">
-        <span>Subtotal (3 artículos)</span>
-        <span>$2,447</span>
+        <span>Subtotal (3 items)</span>
+        <span>$244.97</span>
       </div>
       <div class="summary-row">
-        <span>Envío</span>
-        <span>$99</span>
+        <span>Shipping</span>
+        <span>$9.99</span>
       </div>
       <div class="summary-row discount" id="discountRow" style="display:none">
-        <span>Descuento (DESCUENTO20) <span class="discount-badge visible">−20%</span></span>
-        <span id="discountAmt">−$489</span>
+        <span>Discount (DISCOUNT20) <span class="discount-badge visible">−20%</span></span>
+        <span id="discountAmt">−$48.99</span>
       </div>
       <div class="summary-row total">
         <span>Total</span>
-        <span id="totalAmt">$2,546</span>
+        <span id="totalAmt">$254.96</span>
       </div>
 
       <button class="btn-pay" id="payBtn" onclick="tryPay()">
-        Pagar ahora
+        Pay Now
       </button>
 
       <div class="bug-banner" id="bugBanner">
         <span class="bug-icon">⚠️</span>
         <div>
-          <strong>El botón no responde.</strong> Se aplicó el cupón correctamente pero al presionar "Pagar ahora" no ocurre ninguna acción. Sin error visible para el usuario.
+          <strong>Button not responding.</strong> Coupon was applied successfully but pressing "Pay Now" triggers no action. No error message visible to the user.
         </div>
       </div>
 
@@ -496,7 +522,7 @@
       </div>
 
       <div class="security">
-        🔒 Pago cifrado con SSL · Powered by Conekta
+        🔒 SSL encrypted payment · Powered by Stripe
       </div>
 
     </div>
@@ -511,30 +537,33 @@
   function applyCoupon() {
     const input = document.getElementById('couponInput');
     const status = document.getElementById('couponStatus');
-    const discountRow = document.getElementById('discountRow');
-    const totalAmt = document.getElementById('totalAmt');
+    const couponCode = document.getElementById('couponCode');
     const payBtn = document.getElementById('payBtn');
     const code = input.value.trim().toUpperCase();
 
-    if (code === 'DESCUENTO20') {
+    if (code !== '') {
       input.classList.add('success');
       status.classList.add('success');
-      discountRow.style.display = 'flex';
-      totalAmt.textContent = '$2,057';
+      couponCode.textContent = code;
       couponApplied = true;
 
-      // Bug: el botón queda "roto" visualmente después de aplicar el cupón
+      // BUG 1: coupon applied but total does NOT update
       payBtn.classList.add('broken');
-      payBtn.textContent = 'Pagar ahora';
-
+      payBtn.textContent = 'Pay Now';
       input.disabled = true;
-    } else if (code === '') {
-      input.style.borderColor = '#c94040';
-      setTimeout(() => { input.style.borderColor = ''; }, 1500);
+
     } else {
       input.style.borderColor = '#c94040';
-      status.style.display = 'none';
       setTimeout(() => { input.style.borderColor = ''; }, 1500);
+    }
+  }
+
+  function removeItem(id) {
+    const item = document.getElementById(id);
+    if (item) {
+      // BUG 2: item visually removed but total does NOT update
+      item.classList.add('removed');
+      setTimeout(() => { item.style.display = 'none'; }, 400);
     }
   }
 
@@ -544,7 +573,7 @@
     const clickLog = document.getElementById('clickLog');
 
     if (couponApplied) {
-      // BUG: el botón no hace nada — solo muestra el banner de debug
+      // BUG: button does nothing — only shows debug banner
       clickCount++;
       bugBanner.classList.add('visible');
       clickLog.classList.add('visible');
@@ -559,17 +588,17 @@
       document.getElementById('logEntry3').textContent =
         `[${ts}] btn click #${clickCount} — no navigation triggered`;
 
-      // Animación de "nada pasa" — botón no reacciona
+      // "Nothing happens" animation
       payBtn.style.transform = 'scale(0.99)';
       setTimeout(() => { payBtn.style.transform = ''; }, 100);
 
     } else {
-      // Sin cupón funciona normalmente
-      payBtn.textContent = 'Procesando...';
+      // Without coupon — works normally
+      payBtn.textContent = 'Processing...';
       payBtn.style.background = '#256040';
       payBtn.disabled = true;
       setTimeout(() => {
-        payBtn.textContent = '✓ Pago completado';
+        payBtn.textContent = '✓ Payment Completed';
         payBtn.style.background = '#1a4a30';
       }, 1800);
     }
